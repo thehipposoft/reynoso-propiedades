@@ -1,0 +1,95 @@
+@import "tailwindcss";
+@import "variables";
+
+@theme {
+  /* Colores del proyecto */
+  --color-primary-green: #33847D;
+  --color-green-title: #038C7F;
+  --color-green-blur: #33847d80;
+  --color-primary-gray: #3A3938;
+  --color-dark-blue: #090B19;
+  --color-overlay-bg: #3A3937;
+  --color-title-color: #383838;
+  --color-verde-oscuro: #046658;
+  --color-green-light: #60B9A6;
+  --color-red-blur: #b5553f66;
+
+  /* Sistema de diseño (Material Design 3 tokens) */
+  --color-primary: #032b28;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #1d413e;
+  --color-on-primary-container: #88ada8;
+  --color-secondary: #426562;
+  --color-secondary-container: #c4eae6;
+  --color-on-secondary: #ffffff;
+  --color-surface: #f8fafa;
+  --color-surface-dim: #d8dada;
+  --color-surface-bright: #f8fafa;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f2f4f4;
+  --color-surface-container: #eceeee;
+  --color-surface-container-high: #e6e8e8;
+  --color-surface-container-highest: #e1e3e3;
+  --color-on-surface: #191c1d;
+  --color-on-surface-variant: #414847;
+  --color-outline: #717977;
+  --color-outline-variant: #c0c8c6;
+  --color-inverse-surface: #2e3131;
+  --color-inverse-on-surface: #eff1f1;
+
+  /* Fuentes */
+  --font-jakarta: var(--font-jakarta), sans-serif;
+  --font-inter: var(--font-inter), sans-serif;
+  --font-kadwa: var(--font-kadwa), serif;
+  /* Aliases para clases font-headline / font-body / font-label */
+  --font-headline: var(--font-jakarta), sans-serif;
+  --font-body: var(--font-inter), sans-serif;
+  --font-label: var(--font-inter), sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@view-transition {
+  navigation: auto;
+}
+
+.fondo {
+  background-color: #373737b4;
+}
+
+h2, h1 {
+  color: #383838;
+  position: relative;
+  z-index: 2;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  letter-spacing: -1.5px;
+  line-height: 93.6%;
+}
+
+h3 {
+  color: $primary-green;
+  font-family: $baileys-regular;
+  font-size: 5.5rem;
+  line-height: 3rem;
+}
+
+.font-bailey {
+  font-family: $baileys-regular;
+}
+
+h5 {
+  font-weight: 300;
+  text-transform: uppercase;
+}
+
+
+@media (max-width: 600px) {
+    h2, h1 {
+    font-size: 45px;
+  }
+  .swiper {
+    max-width: 95vw;
+  }
+}

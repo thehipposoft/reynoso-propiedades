@@ -1,0 +1,21 @@
+
+// Colors
+$primary-green: #33847D;
+$primary-gray: #3A3938;
+
+//Fonts
+$baileys-regular: 'Baileys-Regular';
+
+@font-face {
+    font-family: 'Baileys-Regular';
+    font-style: normal;
+    font-weight: 400;
+    src: url('/assets/fonts/RoastedBaileys.ttf');
+}
+
+@font-face {
+    font-family: 'Roboto-light';
+    font-style: normal;
+    font-weight: 300;
+    src: url('/assets/fonts/Roboto-Light.ttf');
+}
