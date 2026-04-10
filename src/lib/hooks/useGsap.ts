@@ -10,22 +10,23 @@ export { gsap, ScrollTrigger };
 export const useFadeUpOnScroll = (
   scope: RefObject<Element | null>,
   selector: string,
-  options?: { stagger?: number }
+  options?: { stagger?: number; duration?: number; start?: string; delay?: number }
 ) => {
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
       gsap.fromTo(
         selector,
-        { opacity: 0, y: 40 },
+        { opacity: 0, y: 20 },
         {
           opacity: 1,
           y: 0,
-          duration: 0.7,
+          duration: options?.duration ?? 0.7,
           ease: "power2.out",
           stagger: options?.stagger ?? 0.1,
+          delay: options?.delay ?? 0,
           scrollTrigger: {
             trigger: selector,
-            start: "top 88%",
+            start: options?.start ?? "top 88%",
             toggleActions: "play none none none",
           },
         }
@@ -33,7 +34,7 @@ export const useFadeUpOnScroll = (
     }, scope);
 
     return () => ctx.revert();
-  }, [scope, selector, options?.stagger]);
+  }, [scope, selector, options?.stagger, options?.duration, options?.start]);
 };
 
 /** Animación de entrada genérica con timeline */
