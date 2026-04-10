@@ -8,11 +8,12 @@ import { PropertyCard } from "./PropertyCard";
 interface Props {
   propiedades: Propiedad[];
   limite?: number;
+  limiteMobile?: number;
   excluirCategoria?: string;
   soloCategoria?: string;
 }
 
-export const PropertyGrid = ({ propiedades, limite, excluirCategoria, soloCategoria }: Props) => {
+export const PropertyGrid = ({ propiedades, limite, limiteMobile, excluirCategoria, soloCategoria }: Props) => {
   const scope = useRef<HTMLDivElement>(null);
 
   let lista = propiedades;
@@ -32,8 +33,11 @@ export const PropertyGrid = ({ propiedades, limite, excluirCategoria, soloCatego
 
   return (
     <div ref={scope} className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-      {lista.map((propiedad) => (
-        <div key={propiedad.id} className="property-card">
+      {lista.map((propiedad, i) => (
+        <div
+          key={propiedad.id}
+          className={`property-card${limiteMobile !== undefined && i >= limiteMobile ? " hidden md:block" : ""}`}
+        >
           <PropertyCard propiedad={propiedad} />
         </div>
       ))}

@@ -48,7 +48,7 @@ export const GaleriaPropiedad = ({ imagenes, titulo }: Props) => {
         {/* Imagen principal — 2 cols × 2 rows */}
         <button
           onClick={() => abrir(0)}
-          className="relative col-span-2 row-span-2 overflow-hidden rounded-2xl bg-surface-container"
+          className="relative col-span-2 row-span-2 overflow-hidden rounded-2xl bg-surface-container cursor-pointer"
         >
           <Image
             src={visibles[0]}
@@ -64,7 +64,7 @@ export const GaleriaPropiedad = ({ imagenes, titulo }: Props) => {
         {visibles[1] && (
           <button
             onClick={() => abrir(1)}
-            className="relative overflow-hidden rounded-2xl bg-surface-container"
+            className="relative overflow-hidden rounded-2xl bg-surface-container cursor-pointer"
           >
             <Image
               src={visibles[1]}
@@ -80,7 +80,7 @@ export const GaleriaPropiedad = ({ imagenes, titulo }: Props) => {
         {visibles[2] && (
           <button
             onClick={() => abrir(2)}
-            className="relative overflow-hidden rounded-2xl bg-surface-container"
+            className="relative overflow-hidden rounded-2xl bg-surface-container cursor-pointer"
           >
             <Image
               src={visibles[2]}
@@ -96,7 +96,7 @@ export const GaleriaPropiedad = ({ imagenes, titulo }: Props) => {
         {visibles[3] && (
           <button
             onClick={() => abrir(3)}
-            className="relative overflow-hidden rounded-2xl bg-surface-container"
+            className="relative overflow-hidden rounded-2xl bg-surface-container cursor-pointer"
           >
             <Image
               src={visibles[3]}
@@ -112,7 +112,7 @@ export const GaleriaPropiedad = ({ imagenes, titulo }: Props) => {
         {visibles[4] && (
           <button
             onClick={() => abrir(4)}
-            className="relative overflow-hidden rounded-2xl bg-surface-container"
+            className="relative overflow-hidden rounded-2xl bg-surface-container cursor-pointer"
           >
             <Image
               src={visibles[4]}
@@ -160,7 +160,7 @@ export const GaleriaPropiedad = ({ imagenes, titulo }: Props) => {
           {/* Cerrar */}
           <button
             onClick={cerrar}
-            className="absolute right-5 top-5 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-xl text-white backdrop-blur transition-colors hover:bg-white/25"
+            className="absolute cursor-pointer right-5 top-5 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-xl text-white backdrop-blur transition-colors hover:bg-white/25"
             aria-label="Cerrar"
           >
             ✕
@@ -170,7 +170,7 @@ export const GaleriaPropiedad = ({ imagenes, titulo }: Props) => {
           {imagenes.length > 1 && (
             <button
               onClick={(e) => { e.stopPropagation(); anterior(); }}
-              className="absolute left-4 top-1/2 -translate-y-1/2 flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-2xl text-white backdrop-blur transition-colors hover:bg-white/25"
+              className="absolute cursor-pointer left-4 top-1/2 -translate-y-1/2 flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-2xl text-white backdrop-blur transition-colors hover:bg-white/25"
               aria-label="Anterior"
             >
               ‹
@@ -181,7 +181,7 @@ export const GaleriaPropiedad = ({ imagenes, titulo }: Props) => {
           {imagenes.length > 1 && (
             <button
               onClick={(e) => { e.stopPropagation(); siguiente(); }}
-              className="absolute right-4 top-1/2 -translate-y-1/2 flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-2xl text-white backdrop-blur transition-colors hover:bg-white/25"
+              className="absolute cursor-pointer right-4 top-1/2 -translate-y-1/2 flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-2xl text-white backdrop-blur transition-colors hover:bg-white/25"
               aria-label="Siguiente"
             >
               ›

@@ -3,6 +3,13 @@ import type { Propiedad, PropiedadRaw } from '@/src/types/PropiedadTypes';
 const API_URL =
   'https://propiedades.reynosobienesraices.com.ar/wp-json/wp/v2/estate_property?_embed&per_page=100';
 
+const decodeHtml = (str: string): string =>
+  str.replace(/&#(\d+);/g, (_, code) => String.fromCharCode(Number(code)))
+     .replace(/&amp;/g, "&")
+     .replace(/&nbsp;/g, " ")
+     .replace(/&quot;/g, '"')
+     .replace(/&#039;/g, "'");
+
 const extraerClase = (clases: string[], prefijo: string): string => {
   const clase = clases.find((c) => c.startsWith(prefijo));
   return clase ? clase.slice(prefijo.length) : '';
@@ -12,7 +19,7 @@ const mapPropiedad = (raw: PropiedadRaw): Propiedad => ({
   id: raw.id,
   slug: raw.slug,
   estado: raw.status,
-  titulo: raw.title.rendered,
+  titulo: decodeHtml(raw.title.rendered),
   descripcion: raw.content.rendered,
   imagen_destacada: raw._embedded?.['wp:featuredmedia']?.[0]?.source_url ?? '',
   galeria_urls: raw.galeria_urls ?? [],

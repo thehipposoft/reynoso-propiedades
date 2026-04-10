@@ -49,7 +49,7 @@ export const Footer = () => (
             </div>
           </div>
             <div className="flex gap-16">
-              <Link href="https://reynosobienesraices.com.ar/#nosotros" target="_blank" rel="noreferrer" className="h-fit font-jakarta text-lg font-bold text-white hover:underline">Nosotros</Link>
+              <Link href="/#nosotros" className="h-fit font-jakarta text-lg font-bold text-white hover:underline">Nosotros</Link>
               <Link href="https://reynosobienesraices.com.ar/desarrollos" target="_blank" rel="noreferrer" className="h-fit font-jakarta text-lg font-bold text-white hover:underline">Nuestros Desarrollos</Link>
             </div>
           {/* Nav + RRSS */}

@@ -5,10 +5,12 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { useEntranceTimeline } from "@/src/lib/hooks/useGsap";
+import { MobileMenu } from "./MobileMenu";
 
 const NAV_ITEMS = [
   { label: "Propiedades", href: "/propiedades" },
-  { label: "Contacto", href: "#contacto" },
+  { label: "Nosotros", href: "/#nosotros" },
+  { label: "Contacto", href: "/#contacto" },
   { label: "Nuestros Desarrollos", href: "https://reynosobienesraices.com.ar/desarrollos", external: true },
 ] as const;
 
@@ -58,6 +60,7 @@ export const Menu = () => {
           />
         </Link>
 
+        {/* Desktop nav */}
         <nav className="hidden items-center gap-8 md:flex">
           {NAV_ITEMS.map((item) => (
             <Link
@@ -70,6 +73,9 @@ export const Menu = () => {
             </Link>
           ))}
         </nav>
+
+        {/* Mobile hamburger */}
+        <MobileMenu items={NAV_ITEMS} />
 
       </div>
     </header>

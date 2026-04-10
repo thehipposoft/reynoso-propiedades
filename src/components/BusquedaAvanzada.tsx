@@ -54,7 +54,7 @@ export const BusquedaAvanzada = () => {
           <select
             value={tipo}
             onChange={(e) => setTipo(e.target.value)}
-            className="rounded-xl border-none bg-surface-container-low py-3 font-medium focus:ring-2 focus:ring-primary/20"
+            className="rounded-xl border-none bg-surface-container-low py-3 px-2 font-medium focus:ring-2 focus:ring-primary/20"
           >
             {TIPOS.map((t) => (
               <option key={t.value} value={t.value}>{t.label}</option>
@@ -69,7 +69,7 @@ export const BusquedaAvanzada = () => {
           <select
             value={categoria}
             onChange={(e) => setCategoria(e.target.value)}
-            className="rounded-xl border-none bg-surface-container-low py-3 font-medium focus:ring-2 focus:ring-primary/20"
+            className="rounded-xl border-none bg-surface-container-low py-3 px-2 font-medium focus:ring-2 focus:ring-primary/20"
           >
             {CATEGORIAS.map((c) => (
               <option key={c.value} value={c.value}>{c.label}</option>
@@ -80,7 +80,7 @@ export const BusquedaAvanzada = () => {
         <div className="flex items-end">
           <button
             type="submit"
-            className="flex h-[52px] w-full items-center justify-center gap-2 rounded-xl bg-verde-oscuro text-xs font-bold uppercase tracking-wider text-on-primary transition-all hover:shadow-xl active:scale-95"
+            className="flex h-[52px] w-full items-center justify-center gap-2 rounded-xl bg-verde-oscuro hover:bg-verde-oscuro/35 duration-300 cursor-pointer hover:text-verde-oscuro text-xs font-bold uppercase tracking-wider text-on-primary transition-all hover:shadow-xl active:scale-95"
           >
             Buscar
           </button>
