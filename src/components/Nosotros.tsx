@@ -29,7 +29,7 @@ export const Nosotros = () => (
             target='_blank'
             rel="noreferrer"
             href="https://wa.me/543874063402?text=Hola!%20Vengo%20desde%20su%20página%20web%20de%20propiedades"
-            className="rounded-full bg-verde-oscuro px-8 py-3 text-sm font-bold uppercase tracking-widest hover:underline text-white transition-all duration-300 hover:bg-verde-oscuro/35 hover:text-verde-oscuro hover:shadow-lg active:scale-95"
+            className="rounded-full bg-verde-oscuro px-8 py-3 text-sm font-bold uppercase tracking-widest hover:underline text-white transition-all duration-300 border border-verde-oscuro hover:bg-white hover:text-title-color hover:shadow-lg active:scale-95"
           >
             Contactanos
           </Link>
@@ -37,7 +37,7 @@ export const Nosotros = () => (
             href="https://reynosobienesraices.com.ar/#nosotros"
             target="_blank"
             rel="noreferrer"
-            className="rounded-full border border-verde-oscuro px-8 py-3 hover:underline text-sm font-bold uppercase tracking-widest text-verde-oscuro transition-all duration-300 hover:bg-verde-oscuro hover:text-white active:scale-95"
+            className="rounded-full border border-verde-oscuro px-8 py-3 hover:underline text-sm font-bold uppercase tracking-widest text-title-color transition-all duration-300 hover:bg-verde-oscuro hover:text-white active:scale-95"
           >
             Conocé quienes somos
           </Link>

@@ -29,7 +29,7 @@ export default async function Home() {
         <div className="mt-12 flex">
           <Link
             href="/propiedades"
-            className="rounded-full bg-verde-oscuro hover:underline hover:text-verde-oscuro duration-300 hover:bg-verde-oscuro/35 px-8 py-3 text-sm font-bold uppercase tracking-widest text-on-primary transition-all hover:shadow-xl active:scale-95"
+            className="rounded-full bg-verde-oscuro hover:underline hover:text-title-color duration-300 hover:bg-white px-8 py-3 border border-verde-oscuro text-sm font-bold uppercase tracking-widest text-on-primary transition-all hover:shadow-xl active:scale-95"
           >
             Ver Todas
           </Link>
@@ -47,6 +47,14 @@ export default async function Home() {
         </div>
 
         <PropertyGrid propiedades={propiedades} soloCategoria="inversion" limiteMobile={3} />
+        <div className="mt-12 flex">
+          <Link
+            href="/propiedades?categoria=inversion"
+            className="rounded-full bg-verde-oscuro hover:underline hover:text-title-color duration-300 hover:bg-white px-8 py-3 border border-verde-oscuro text-sm font-bold uppercase tracking-widest text-on-primary transition-all hover:shadow-xl active:scale-95"
+          >
+            Ver proyectos
+          </Link>
+        </div>
       </section>
 
       <Nosotros />
