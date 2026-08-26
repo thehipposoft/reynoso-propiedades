@@ -23,6 +23,7 @@ export const ODOO_FIELDS = {
   DESCRIPCION: 'x_studio_descripcin_1',
   GALERIA: 'x_studio_galeria_2',
   GALERIA_SEQUENCE: 'x_studio_sequence',
+  GALERIA_IMAGEN: 'x_studio_imagen_1',
 } as const;
 
 export type TipoOperacion = 'venta' | 'alquiler';
