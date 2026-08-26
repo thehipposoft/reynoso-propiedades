@@ -3,16 +3,22 @@ import { Footer } from "@/src/components/Footer";
 import { Hero } from "@/src/components/Hero";
 import { Nosotros } from "@/src/components/Nosotros";
 import { PropertyGrid } from "@/src/components/PropertyGrid";
-import { getProperties } from "@/src/lib/api/properties";
+import { getProperties } from "@/src/lib/odoo/properties";
+import { getCategoriasPropiedad } from "@/src/lib/odoo/categories";
 
 const PROPIEDADES_HOME = 6;
+const CATEGORIA_EN_POZO = "departamento-en-pozo";
 
 export default async function Home() {
-  const propiedades = await getProperties();
+  const [propiedades, propiedadesEnPozo, categorias] = await Promise.all([
+    getProperties(),
+    getProperties({ categoriaSlug: CATEGORIA_EN_POZO }),
+    getCategoriasPropiedad(),
+  ]);
 
   return (
     <main>
-      <Hero />
+      <Hero categorias={categorias} />
 
       <section className="mx-auto max-w-7xl px-6 py-24">
         <div className="mb-16 max-w-xl">
@@ -24,7 +30,7 @@ export default async function Home() {
           </p>
         </div>
 
-        <PropertyGrid propiedades={propiedades} limite={PROPIEDADES_HOME} limiteMobile={3} excluirCategoria="inversion" />
+        <PropertyGrid propiedades={propiedades} limite={PROPIEDADES_HOME} limiteMobile={3} />
 
         <div className="mt-12 flex">
           <Link
@@ -46,10 +52,10 @@ export default async function Home() {
           </p>
         </div>
 
-        <PropertyGrid propiedades={propiedades} soloCategoria="inversion" limiteMobile={3} />
+        <PropertyGrid propiedades={propiedadesEnPozo} limiteMobile={3} />
         <div className="mt-12 flex">
           <Link
-            href="/propiedades?categoria=inversion"
+            href="/propiedades"
             className="rounded-full bg-verde-oscuro hover:underline hover:text-title-color duration-300 hover:bg-white px-8 py-3 border border-verde-oscuro text-sm font-bold uppercase tracking-widest text-on-primary transition-all hover:shadow-xl active:scale-95"
           >
             Ver proyectos

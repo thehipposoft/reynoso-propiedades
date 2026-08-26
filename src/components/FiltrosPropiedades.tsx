@@ -1,109 +1,136 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import type { CategoriaPropiedad } from "@/src/lib/odoo/categories";
+import { OPERACIONES } from "@/src/lib/filtros";
 
-const TIPOS = [
-  { label: "Todos", value: "" },
-  { label: "Venta", value: "venta" },
-  { label: "Alquiler", value: "alquiler" },
-  { label: "Alquiler / Venta", value: "alquiler-venta" },
-  { label: "Inversión en Pozo", value: "inversion-en-pozo" },
-];
+interface Props {
+  categorias: CategoriaPropiedad[];
+}
 
-const CATEGORIAS = [
-  { label: "Todas", value: "" },
-  { label: "Casa", value: "casa" },
-  { label: "Comercial / Galpón", value: "comercial-galpon" },
-  { label: "Departamento", value: "departamento" },
-  { label: "Duplex", value: "duplex" },
-  { label: "Galpón", value: "galpon" },
-  { label: "Inversión en Pozo", value: "inversion" },
-  { label: "Local Comercial", value: "local-comercial" },
-  { label: "Monoambiente", value: "monoambiente" },
-  { label: "Oficina", value: "oficina" },
-  { label: "PH", value: "ph" },
-  { label: "Terreno", value: "terreno" },
-];
-
-export const FiltrosPropiedades = () => {
+export const FiltrosPropiedades = ({ categorias }: Props) => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const [tipo, setTipo] = useState(searchParams.get("tipo") ?? "");
+  const [busqueda, setBusqueda] = useState(searchParams.get("q") ?? "");
+  const [operacion, setOperacion] = useState(searchParams.get("operacion") ?? "");
   const [categoria, setCategoria] = useState(searchParams.get("categoria") ?? "");
+  const [precioMin, setPrecioMin] = useState(searchParams.get("precioMin") ?? "");
+  const [precioMax, setPrecioMax] = useState(searchParams.get("precioMax") ?? "");
 
-  // Sincroniza si el usuario navega con back/forward
-  useEffect(() => {
-    setTipo(searchParams.get("tipo") ?? "");
-    setCategoria(searchParams.get("categoria") ?? "");
-  }, [searchParams]);
-
-  const aplicar = () => {
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
     const params = new URLSearchParams();
-    if (tipo) params.set("tipo", tipo);
+    if (busqueda.trim()) params.set("q", busqueda.trim());
+    if (operacion) params.set("operacion", operacion);
     if (categoria) params.set("categoria", categoria);
-    const query = params.toString();
-    router.push(`/propiedades${query ? `?${query}` : ""}`);
+    if (precioMin) params.set("precioMin", precioMin);
+    if (precioMax) params.set("precioMax", precioMax);
+    router.push(`/propiedades${params.toString() ? `?${params.toString()}` : ""}`);
   };
 
-  const limpiar = () => {
-    setTipo("");
+  const handleReset = () => {
+    setBusqueda("");
+    setOperacion("");
     setCategoria("");
+    setPrecioMin("");
+    setPrecioMax("");
     router.push("/propiedades");
   };
 
-  const hayFiltros = tipo || categoria;
-
   return (
-    <div className="mb-10 flex flex-wrap items-end gap-4">
-
-      <div className="flex flex-col gap-1">
-        <label className="pl-1 text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">
-          Tipo
-        </label>
-        <select
-          value={tipo}
-          onChange={(e) => setTipo(e.target.value)}
-          className="rounded-xl border border-outline-variant bg-surface-container-low px-4 py-2.5 text-sm font-medium text-on-surface focus:outline-none focus:ring-2 focus:ring-primary-green/30"
-        >
-          {TIPOS.map((t) => (
-            <option key={t.value} value={t.value}>{t.label}</option>
-          ))}
-        </select>
-      </div>
-
-      <div className="flex flex-col gap-1">
-        <label className="pl-1 text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">
-          Categoría
-        </label>
-        <select
-          value={categoria}
-          onChange={(e) => setCategoria(e.target.value)}
-          className="rounded-xl border border-outline-variant bg-surface-container-low px-4 py-2.5 text-sm font-medium text-on-surface focus:outline-none focus:ring-2 focus:ring-primary-green/30"
-        >
-          {CATEGORIAS.map((c) => (
-            <option key={c.value} value={c.value}>{c.label}</option>
-          ))}
-        </select>
-      </div>
-
-      <button
-        onClick={aplicar}
-        className="h-[42px] rounded-xl bg-verde-oscuro px-6 text-xs font-bold uppercase tracking-wider text-white transition-all hover:shadow-lg active:scale-95"
+    <aside className="w-full shrink-0 lg:w-72">
+      <form
+        onSubmit={handleSubmit}
+        className="flex flex-col gap-5 rounded-2xl bg-surface-container-lowest p-5 shadow-sm lg:sticky lg:top-24"
       >
-        Aplicar
-      </button>
+        <h2 className="text-sm font-bold uppercase tracking-widest text-secondary">Filtros</h2>
 
-      {hayFiltros && (
-        <button
-          onClick={limpiar}
-          className="h-[42px] rounded-xl border border-outline-variant px-5 text-xs font-bold uppercase tracking-wider text-on-surface-variant transition-colors hover:border-primary-green hover:text-primary-green"
-        >
-          Limpiar
-        </button>
-      )}
+        <div className="flex flex-col gap-2">
+          <label className="text-[10px] font-bold uppercase tracking-widest text-secondary">
+            Buscar
+          </label>
+          <input
+            type="text"
+            value={busqueda}
+            onChange={(e) => setBusqueda(e.target.value)}
+            placeholder="Nombre o dirección"
+            className="rounded-xl border-none bg-surface-container-low py-3 px-3 font-medium focus:ring-2 focus:ring-primary/20"
+          />
+        </div>
 
-    </div>
+        <div className="flex flex-col gap-2">
+          <label className="text-[10px] font-bold uppercase tracking-widest text-secondary">
+            Operación
+          </label>
+          <select
+            value={operacion}
+            onChange={(e) => setOperacion(e.target.value)}
+            className="rounded-xl border-none bg-surface-container-low py-3 px-2 font-medium focus:ring-2 focus:ring-primary/20"
+          >
+            {OPERACIONES.map((o) => (
+              <option key={o.value} value={o.value}>{o.label}</option>
+            ))}
+          </select>
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <label className="text-[10px] font-bold uppercase tracking-widest text-secondary">
+            Categoría
+          </label>
+          <select
+            value={categoria}
+            onChange={(e) => setCategoria(e.target.value)}
+            className="rounded-xl border-none bg-surface-container-low py-3 px-2 font-medium focus:ring-2 focus:ring-primary/20"
+          >
+            <option value="">Todas</option>
+            {categorias.map((c) => (
+              <option key={c.slug} value={c.slug}>{c.label}</option>
+            ))}
+          </select>
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <label className="text-[10px] font-bold uppercase tracking-widest text-secondary">
+            Precio
+          </label>
+          <div className="flex gap-2">
+            <input
+              type="number"
+              min={0}
+              value={precioMin}
+              onChange={(e) => setPrecioMin(e.target.value)}
+              placeholder="Mín."
+              className="w-1/2 rounded-xl border-none bg-surface-container-low py-3 px-3 font-medium focus:ring-2 focus:ring-primary/20"
+            />
+            <input
+              type="number"
+              min={0}
+              value={precioMax}
+              onChange={(e) => setPrecioMax(e.target.value)}
+              placeholder="Máx."
+              className="w-1/2 rounded-xl border-none bg-surface-container-low py-3 px-3 font-medium focus:ring-2 focus:ring-primary/20"
+            />
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-2 pt-2">
+          <button
+            type="submit"
+            className="flex h-[48px] w-full items-center justify-center rounded-xl bg-verde-oscuro text-xs font-bold uppercase tracking-wider text-on-primary transition-all hover:bg-verde-oscuro/35 hover:text-verde-oscuro hover:shadow-xl active:scale-95"
+          >
+            Aplicar filtros
+          </button>
+          <button
+            type="button"
+            onClick={handleReset}
+            className="text-xs font-bold uppercase tracking-wider text-on-surface-variant transition-colors hover:text-primary"
+          >
+            Limpiar filtros
+          </button>
+        </div>
+      </form>
+    </aside>
   );
 };

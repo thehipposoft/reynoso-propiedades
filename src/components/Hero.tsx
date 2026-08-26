@@ -4,10 +4,15 @@ import Image from "next/image";
 import { useRef } from "react";
 import { useEntranceTimeline } from "@/src/lib/hooks/useGsap";
 import { BusquedaAvanzada } from "./BusquedaAvanzada";
+import type { CategoriaPropiedad } from "@/src/lib/odoo/categories";
 
 const HERO_IMAGE = "/assets/images/hero.jpg";
 
-export const Hero = () => {
+interface Props {
+  categorias: CategoriaPropiedad[];
+}
+
+export const Hero = ({ categorias }: Props) => {
   const scope = useRef<HTMLElement>(null);
 
   useEntranceTimeline(scope, (tl) => {
@@ -42,7 +47,7 @@ export const Hero = () => {
 
       {/* Formulario */}
       <div className="hero-form relative z-10 flex w-full justify-center">
-        <BusquedaAvanzada />
+        <BusquedaAvanzada categorias={categorias} />
       </div>
     </section>
   );

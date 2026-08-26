@@ -1,22 +1,11 @@
 import Link from "next/link";
-import type { Propiedad } from "@/src/types/PropiedadTypes";
+import type { OdooPropiedad } from "@/src/types/OdooPropiedad";
+import { formatPrecio, formatLabel, operacionDesdeEstado } from "@/src/lib/format";
 import { GaleriaPropiedad } from "./GaleriaPropiedad";
 
 interface Props {
-  propiedad: Propiedad;
+  propiedad: OdooPropiedad;
 }
-
-const LABEL: Record<string, string> = {
-  casa: "Casa",
-  departamento: "Departamento",
-  terreno: "Terreno",
-  quinta: "Quinta",
-  inversion: "Inversión",
-  venta: "Venta",
-  alquiler: "Alquiler",
-};
-
-const capitalize = (s: string) => LABEL[s] ?? s.charAt(0).toUpperCase() + s.slice(1);
 
 interface StatProps { label: string; value: string }
 const Stat = ({ label, value }: StatProps) => (
@@ -28,16 +17,19 @@ const Stat = ({ label, value }: StatProps) => (
 
 export const SinglePropiedad = ({ propiedad }: Props) => {
   const todasLasImagenes = [
-    propiedad.imagen_destacada,
-    ...propiedad.galeria_urls,
-  ].filter(Boolean);
+    propiedad.fotoPortada,
+    ...propiedad.fotos.map((f) => f.url),
+  ].filter((url): url is string => Boolean(url));
+
+  const operacion = operacionDesdeEstado(propiedad.estado);
+  const precioFormateado = formatPrecio(propiedad.precio, propiedad.moneda);
 
   const stats: StatProps[] = [
-    propiedad.propiedad_ambientes !== "0" && { label: "Ambientes", value: propiedad.propiedad_ambientes },
-    propiedad.propiedad_dormitorios !== "0" && { label: "Dormitorios", value: propiedad.propiedad_dormitorios },
-    propiedad.propiedad_banos !== "0" && { label: "Baños", value: propiedad.propiedad_banos },
-    propiedad.propiedad_superficie !== "0" && { label: "Superficie", value: `${propiedad.propiedad_superficie} m²` },
-    propiedad.propiedad_superficie_lote !== "0" && { label: "Sup. lote", value: `${propiedad.propiedad_superficie_lote} m²` },
+    propiedad.ambientes && { label: "Ambientes", value: propiedad.ambientes },
+    propiedad.dormitorios && { label: "Dormitorios", value: propiedad.dormitorios },
+    propiedad.banos && { label: "Baños", value: propiedad.banos },
+    propiedad.superficieTotal && { label: "Superficie", value: `${propiedad.superficieTotal} m²` },
+    propiedad.superficieCubierta && { label: "Sup. cubierta", value: `${propiedad.superficieCubierta} m²` },
   ].filter(Boolean) as StatProps[];
 
   return (
@@ -51,16 +43,16 @@ export const SinglePropiedad = ({ propiedad }: Props) => {
         ← Volver a propiedades
       </Link>
 
-      {/* 1. Categoria + Tipo */}
+      {/* 1. Tipo de propiedad + Operación */}
       <div className="mb-4 flex flex-wrap items-center gap-2">
-        {propiedad.categoria && (
+        {propiedad.tipoPropiedad && (
           <span className="rounded-full bg-primary-green/10 px-4 py-1 text-xs font-bold uppercase tracking-widest text-verde-oscuro">
-            {capitalize(propiedad.categoria)}
+            {formatLabel(propiedad.tipoPropiedad)}
           </span>
         )}
-        {propiedad.tipo && (
+        {operacion && (
           <span className="rounded-full bg-surface-container px-4 py-1 text-xs font-bold uppercase tracking-widest text-on-surface-variant">
-            {capitalize(propiedad.tipo)}
+            {operacion}
           </span>
         )}
       </div>
@@ -68,18 +60,17 @@ export const SinglePropiedad = ({ propiedad }: Props) => {
       {/* 2. Título + Precio */}
       <div className="mb-10 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
         <h1 className="font-headline text-4xl font-bold tracking-tight text-on-surface">
-          {propiedad.titulo}
+          {propiedad.nombre}
         </h1>
-        {propiedad.categoria !== "inversion" && propiedad.propiedad_precio && (
+        {precioFormateado && (
           <p className="shrink-0 font-headline text-3xl font-extrabold text-verde-oscuro">
-            {propiedad.propiedad_moneda}{" "}
-            {Number(propiedad.propiedad_precio).toLocaleString("es-AR")}
+            {precioFormateado}
           </p>
         )}
       </div>
 
       {/* 3. Galería */}
-      <GaleriaPropiedad imagenes={todasLasImagenes} titulo={propiedad.titulo} />
+      <GaleriaPropiedad imagenes={todasLasImagenes} titulo={propiedad.nombre} />
 
       {/* 4. Stats */}
       {stats.length > 0 && (
@@ -88,21 +79,23 @@ export const SinglePropiedad = ({ propiedad }: Props) => {
         </div>
       )}
 
-      {/* 5. Descripción */}
+      {/* 5. Descripción — texto plano en Odoo, no HTML como en WordPress */}
       {propiedad.descripcion && (
-        <div
-          className="prose prose-lg max-w-none text-on-surface-variant"
-          dangerouslySetInnerHTML={{ __html: propiedad.descripcion }}
-        />
+        <p className="whitespace-pre-line text-lg leading-relaxed text-on-surface-variant">
+          {propiedad.descripcion}
+        </p>
       )}
 
       {/* 6. Dirección */}
-      {propiedad.propiedad_direccion && (
+      {propiedad.direccion && (
         <div className="mt-10 flex items-start gap-3 rounded-2xl bg-surface-container-low p-5">
           <span className="mt-0.5 text-verde-oscuro">📍</span>
           <div>
             <p className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Dirección</p>
-            <p className="font-medium text-on-surface">{propiedad.propiedad_direccion}, {propiedad.propiedad_pais}</p>
+            <p className="font-medium text-on-surface">
+              {propiedad.direccion}
+              {propiedad.zona ? `, ${propiedad.zona}` : ""}
+            </p>
           </div>
         </div>
       )}

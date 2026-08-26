@@ -1,24 +1,22 @@
 "use client";
 
 import { useRef } from "react";
-import type { Propiedad } from "@/src/types/PropiedadTypes";
+import type { OdooPropiedad } from "@/src/types/OdooPropiedad";
 import { useFadeUpOnScroll } from "@/src/lib/hooks/useGsap";
 import { PropertyCard } from "./PropertyCard";
 
 interface Props {
-  propiedades: Propiedad[];
+  propiedades: OdooPropiedad[];
   limite?: number;
   limiteMobile?: number;
-  excluirCategoria?: string;
-  soloCategoria?: string;
+  filter?: (propiedad: OdooPropiedad) => boolean;
 }
 
-export const PropertyGrid = ({ propiedades, limite, limiteMobile, excluirCategoria, soloCategoria }: Props) => {
+export const PropertyGrid = ({ propiedades, limite, limiteMobile, filter }: Props) => {
   const scope = useRef<HTMLDivElement>(null);
 
   let lista = propiedades;
-  if (excluirCategoria) lista = lista.filter((p) => p.categoria !== excluirCategoria);
-  if (soloCategoria) lista = lista.filter((p) => p.categoria === soloCategoria);
+  if (filter) lista = lista.filter(filter);
   if (limite) lista = lista.slice(0, limite);
 
   useFadeUpOnScroll(scope, ".property-card", { stagger: 0.08 });

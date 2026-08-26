@@ -2,39 +2,22 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import type { CategoriaPropiedad } from "@/src/lib/odoo/categories";
+import { OPERACIONES } from "@/src/lib/filtros";
 
-const TIPOS: { label: string; value: string }[] = [
-  { label: "Todos", value: "" },
-  { label: "Venta", value: "venta" },
-  { label: "Alquiler", value: "alquiler" },
-  { label: "Alquiler / Venta", value: "alquiler-venta" },
-  { label: "Inversión en Pozo", value: "inversion-en-pozo" },
-];
+interface Props {
+  categorias: CategoriaPropiedad[];
+}
 
-const CATEGORIAS: { label: string; value: string }[] = [
-  { label: "Todas", value: "" },
-  { label: "Casa", value: "casa" },
-  { label: "Comercial / Galpón", value: "comercial-galpon" },
-  { label: "Departamento", value: "departamento" },
-  { label: "Duplex", value: "duplex" },
-  { label: "Galpón", value: "galpon" },
-  { label: "Inversión en Pozo", value: "inversion" },
-  { label: "Local Comercial", value: "local-comercial" },
-  { label: "Monoambiente", value: "monoambiente" },
-  { label: "Oficina", value: "oficina" },
-  { label: "PH", value: "ph" },
-  { label: "Terreno", value: "terreno" },
-];
-
-export const BusquedaAvanzada = () => {
+export const BusquedaAvanzada = ({ categorias }: Props) => {
   const router = useRouter();
-  const [tipo, setTipo] = useState("");
+  const [operacion, setOperacion] = useState("");
   const [categoria, setCategoria] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const params = new URLSearchParams();
-    if (tipo) params.set("tipo", tipo);
+    if (operacion) params.set("operacion", operacion);
     if (categoria) params.set("categoria", categoria);
     const query = params.toString();
     router.push(`/propiedades${query ? `?${query}` : ""}`);
@@ -49,15 +32,15 @@ export const BusquedaAvanzada = () => {
 
         <div className="flex flex-col gap-2">
           <label className="pl-2 text-[10px] font-bold uppercase tracking-widest text-secondary">
-            Tipo
+            Operación
           </label>
           <select
-            value={tipo}
-            onChange={(e) => setTipo(e.target.value)}
+            value={operacion}
+            onChange={(e) => setOperacion(e.target.value)}
             className="rounded-xl border-none bg-surface-container-low py-3 px-2 font-medium focus:ring-2 focus:ring-primary/20"
           >
-            {TIPOS.map((t) => (
-              <option key={t.value} value={t.value}>{t.label}</option>
+            {OPERACIONES.map((o) => (
+              <option key={o.value} value={o.value}>{o.label}</option>
             ))}
           </select>
         </div>
@@ -71,8 +54,9 @@ export const BusquedaAvanzada = () => {
             onChange={(e) => setCategoria(e.target.value)}
             className="rounded-xl border-none bg-surface-container-low py-3 px-2 font-medium focus:ring-2 focus:ring-primary/20"
           >
-            {CATEGORIAS.map((c) => (
-              <option key={c.value} value={c.value}>{c.label}</option>
+            <option value="">Todas</option>
+            {categorias.map((c) => (
+              <option key={c.slug} value={c.slug}>{c.label}</option>
             ))}
           </select>
         </div>
