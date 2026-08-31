@@ -8,11 +8,10 @@ import { PropertyCard } from "./PropertyCard";
 interface Props {
   propiedades: OdooPropiedad[];
   limite?: number;
-  limiteMobile?: number;
   filter?: (propiedad: OdooPropiedad) => boolean;
 }
 
-export const PropertyGrid = ({ propiedades, limite, limiteMobile, filter }: Props) => {
+export const PropertyGrid = ({ propiedades, limite, filter }: Props) => {
   const scope = useRef<HTMLDivElement>(null);
 
   let lista = propiedades;
@@ -30,12 +29,12 @@ export const PropertyGrid = ({ propiedades, limite, limiteMobile, filter }: Prop
   }
 
   return (
-    <div ref={scope} className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-      {lista.map((propiedad, i) => (
-        <div
-          key={propiedad.id}
-          className={`property-card${limiteMobile !== undefined && i >= limiteMobile ? " hidden md:block" : ""}`}
-        >
+    <div
+      ref={scope}
+      className="flex snap-x snap-mandatory gap-6 overflow-x-auto px-12 pb-2 md:grid md:grid-cols-2 md:overflow-visible md:pb-0 lg:grid-cols-3"
+    >
+      {lista.map((propiedad) => (
+        <div key={propiedad.id} className="property-card w-[80vw] shrink-0 snap-start sm:w-[60vw] md:w-auto">
           <PropertyCard propiedad={propiedad} />
         </div>
       ))}

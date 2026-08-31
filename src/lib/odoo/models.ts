@@ -2,6 +2,7 @@ export const ODOO_MODELS = {
   PROPIEDAD: 'x_propiedades',
   GALERIA_LINE: 'x_propiedades_line_0c77d',
   TIPO_PROPIEDAD: 'x_tipo_de_propiedades',
+  RES_USERS: 'res.users',
 } as const;
 
 export const ODOO_FIELDS = {
@@ -24,6 +25,8 @@ export const ODOO_FIELDS = {
   GALERIA: 'x_studio_galeria_2',
   GALERIA_SEQUENCE: 'x_studio_sequence',
   GALERIA_IMAGEN: 'x_studio_imagen_1',
+  RESPONSABLE: 'x_studio_responsable',
+  ZONA: 'x_studio_zona',
 } as const;
 
 export type TipoOperacion = 'venta' | 'alquiler';

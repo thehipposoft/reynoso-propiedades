@@ -1,6 +1,7 @@
 import { getProperties, type PropertyFilters } from "@/src/lib/odoo/properties";
 import { getCategoriasPropiedad } from "@/src/lib/odoo/categories";
 import type { TipoOperacion } from "@/src/lib/odoo/models";
+import { CATEGORIA_EN_POZO } from "@/src/lib/filtros";
 import { PropertyCard } from "@/src/components/PropertyCard";
 import { FiltrosPropiedades } from "@/src/components/FiltrosPropiedades";
 
@@ -14,10 +15,29 @@ function parsePrecio(value?: string): number | undefined {
   return Number.isFinite(n) && n >= 0 ? n : undefined;
 }
 
+function tituloPropiedades(
+  cantidad: number,
+  operacion: TipoOperacion | undefined,
+  esPozo: boolean
+): string {
+  if (esPozo) {
+    return `Tenemos ${cantidad} ${cantidad === 1 ? "oportunidad" : "oportunidades"} de inversión en pozo`;
+  }
+  if (operacion === "venta") {
+    return `Tenemos ${cantidad} ${cantidad === 1 ? "propiedad" : "propiedades"} en venta`;
+  }
+  if (operacion === "alquiler") {
+    return `Tenemos ${cantidad} ${cantidad === 1 ? "propiedad" : "propiedades"} en alquiler`;
+  }
+  return `Tenemos ${cantidad} ${cantidad === 1 ? "propiedad disponible" : "propiedades disponibles"}`;
+}
+
 interface SearchParams {
   operacion?: string;
   categoria?: string;
   q?: string;
+  zona?: string;
+  moneda?: string;
   precioMin?: string;
   precioMax?: string;
 }
@@ -28,11 +48,15 @@ export default async function PropiedadesPage({
   searchParams: Promise<SearchParams>;
 }) {
   const params = await searchParams;
+  const operacion = parseOperacion(params.operacion);
+  const esPozo = params.categoria === CATEGORIA_EN_POZO;
 
   const filters: PropertyFilters = {
-    operacion: parseOperacion(params.operacion),
+    operacion,
     categoriaSlug: params.categoria || undefined,
     busqueda: params.q || undefined,
+    zonaGeografica: params.zona || undefined,
+    moneda: params.moneda || undefined,
     precioMin: parsePrecio(params.precioMin),
     precioMax: parsePrecio(params.precioMax),
   };
@@ -42,27 +66,23 @@ export default async function PropiedadesPage({
     getCategoriasPropiedad(),
   ]);
 
-  const titulo = `Viendo ${properties.length} ${properties.length === 1 ? "propiedad" : "propiedades"}`;
+  const titulo = tituloPropiedades(properties.length, operacion, esPozo);
 
   return (
-    <main className="mx-auto max-w-7xl px-4 py-10">
-      <h1 className="mb-8 text-3xl font-semibold">{titulo}</h1>
+    <main className="mx-auto w-full max-w-7xl px-4 py-10">
+      <FiltrosPropiedades categorias={categorias} />
 
-      <div className="flex flex-col gap-8 lg:flex-row lg:items-start">
-        <FiltrosPropiedades categorias={categorias} />
+      <h1 className="mb-8 text-xl font-semibold">{titulo}</h1>
 
-        <div className="flex-1">
-          {properties.length === 0 ? (
-            <p className="text-gray-500">No hay propiedades disponibles con estos filtros.</p>
-          ) : (
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
-              {properties.map((property) => (
-                <PropertyCard key={property.id} propiedad={property} />
-              ))}
-            </div>
-          )}
+      {properties.length === 0 ? (
+        <p className="text-gray-500">No hay propiedades disponibles con estos filtros.</p>
+      ) : (
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-3">
+          {properties.map((property) => (
+            <PropertyCard key={property.id} propiedad={property} mostrarAgente />
+          ))}
         </div>
-      </div>
+      )}
     </main>
   );
 }

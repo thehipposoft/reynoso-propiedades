@@ -8,6 +8,7 @@ import {
   type TipoOperacion,
 } from './models';
 import { slugify } from '@/src/lib/slug';
+import { getAgentePorOdooId } from '@/src/lib/agentes';
 import type { OdooPropiedad, OdooPropiedadFoto } from '@/src/types/OdooPropiedad';
 
 const PROPERTY_FIELDS = [
@@ -29,12 +30,16 @@ const PROPERTY_FIELDS = [
   ODOO_FIELDS.DESCRIPCION,
   ODOO_FIELDS.FOTO_PORTADA,
   ODOO_FIELDS.GALERIA,
+  ODOO_FIELDS.RESPONSABLE,
+  ODOO_FIELDS.ZONA,
 ];
 
 export interface PropertyFilters {
   operacion?: TipoOperacion;
   categoriaSlug?: string;
   busqueda?: string;
+  zonaGeografica?: string;
+  moneda?: string;
   precioMin?: number;
   precioMax?: number;
 }
@@ -78,7 +83,13 @@ async function fetchFotos(lineIds: number[]): Promise<OdooPropiedadFoto[]> {
     }));
 }
 
+function mapMany2OneId(value: unknown): number | null {
+  return Array.isArray(value) ? (value[0] as number) : null;
+}
+
 function mapPropiedad(raw: any, fotos: OdooPropiedadFoto[]): OdooPropiedad {
+  const responsableId = mapMany2OneId(raw[ODOO_FIELDS.RESPONSABLE]);
+
   return {
     id: raw.id,
     slug: buildSlug(raw.x_name, raw.id),
@@ -88,6 +99,7 @@ function mapPropiedad(raw: any, fotos: OdooPropiedadFoto[]): OdooPropiedad {
     moneda: raw[ODOO_FIELDS.MONEDA] || null,
     tipoPropiedad: mapMany2One(raw[ODOO_FIELDS.TIPO_PROPIEDAD]),
     zona: firstNonEmpty(raw[ODOO_FIELDS.BARRIO], raw[ODOO_FIELDS.LOCALIDAD]),
+    zonaGeografica: raw[ODOO_FIELDS.ZONA] || null,
     direccion: raw[ODOO_FIELDS.DOMICILIO] || null,
     ambientes: raw[ODOO_FIELDS.AMBIENTES] || null,
     dormitorios: raw[ODOO_FIELDS.DORMITORIOS] || null,
@@ -97,19 +109,27 @@ function mapPropiedad(raw: any, fotos: OdooPropiedadFoto[]): OdooPropiedad {
     descripcion: raw[ODOO_FIELDS.DESCRIPCION] || null,
     fotoPortada: raw[ODOO_FIELDS.FOTO_PORTADA] ? `/api/property-cover/${raw.id}` : null,
     fotos,
+    responsableNombre: mapMany2One(raw[ODOO_FIELDS.RESPONSABLE]),
+    agente: responsableId !== null ? getAgentePorOdooId(responsableId) : null,
   };
 }
 
 async function fetchProperties(filters: PropertyFilters = {}): Promise<OdooPropiedad[]> {
-  const { operacion, categoriaSlug, busqueda, precioMin, precioMax } = filters;
+  const { operacion, categoriaSlug, busqueda, zonaGeografica, moneda, precioMin, precioMax } = filters;
   const estados = estadosDisponiblesParaOperacion(operacion);
 
-  // Estado, nombre y precio se filtran directo en Odoo (más eficiente).
+  // Estado, nombre, zona, moneda y precio se filtran directo en Odoo (más eficiente).
   // Categoría se filtra después en JS — ver nota al pie de la función.
   const domain: unknown[] = [[ODOO_FIELDS.ESTADO, 'in', estados]];
 
   if (busqueda?.trim()) {
     domain.push(['x_name', 'ilike', busqueda.trim()]);
+  }
+  if (zonaGeografica) {
+    domain.push([ODOO_FIELDS.ZONA, '=', zonaGeografica]);
+  }
+  if (moneda) {
+    domain.push([ODOO_FIELDS.MONEDA, '=', moneda]);
   }
   if (precioMin !== undefined) {
     domain.push([ODOO_FIELDS.PRECIO, '>=', precioMin]);

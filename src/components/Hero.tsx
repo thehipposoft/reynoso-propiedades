@@ -39,8 +39,8 @@ export const Hero = ({ categorias }: Props) => {
       </div>
 
       {/* Título */}
-      <div className="hero-title relative z-10 mb-12 max-w-4xl text-center">
-        <h4 className="mb-6 font-headline text-5xl font-extrabold leading-tight tracking-tight text-white drop-shadow-lg md:text-7xl">
+      <div className="hero-title relative z-10 mb-4 max-w-4xl text-center">
+        <h4 className="font-headline text-5xl font-extrabold leading-tight tracking-tight text-white drop-shadow-lg md:text-7xl">
           Encontrá tu hogar ideal
         </h4>
       </div>

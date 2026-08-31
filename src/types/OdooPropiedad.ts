@@ -1,3 +1,5 @@
+import type { Agente } from "@/src/lib/agentes";
+
 export interface OdooPropiedadFoto {
   id: number;
   url: string;
@@ -19,6 +21,7 @@ export interface OdooPropiedad {
   moneda: string | null;
   tipoPropiedad: string | null;
   zona: string | null;
+  zonaGeografica: string | null;
   direccion: string | null;
   ambientes: string | null;
   dormitorios: string | null;
@@ -28,4 +31,6 @@ export interface OdooPropiedad {
   descripcion: string | null;
   fotoPortada: string | null;
   fotos: OdooPropiedadFoto[];
+  responsableNombre: string | null;
+  agente: Agente | null;
 }

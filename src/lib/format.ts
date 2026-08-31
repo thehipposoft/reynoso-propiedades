@@ -16,6 +16,12 @@ export function formatLabel(value: string): string {
   return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
 }
 
+export function formatTitulo(value: string): string {
+  return value
+    .toLowerCase()
+    .replace(/(^|\s)\S/g, (letra) => letra.toUpperCase());
+}
+
 export function operacionDesdeEstado(estado: string | null): string | null {
   if (!estado) return null;
   if (estado === "En Alquiler") return "Alquiler";
