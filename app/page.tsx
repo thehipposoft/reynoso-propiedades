@@ -35,7 +35,7 @@ export default async function Home() {
         <div className="mt-12 flex">
           <Link
             href="/propiedades"
-            className="rounded-full bg-verde-oscuro hover:underline hover:text-title-color duration-300 hover:bg-white px-8 py-3 border border-verde-oscuro text-sm font-bold uppercase tracking-widest text-on-primary transition-all hover:shadow-xl active:scale-95"
+            className="flex items-center justify-center gap-2 cursor-pointer rounded-full bg-verde-oscuro px-8 py-4 font-poppins text-sm font-semibold text-white shadow-lg backdrop-blur transition-all duration-300 border uppercase border-verder-oscuro hover:-translate-y-1 hover:bg-white/90 hover:text-verde-oscuro hover:shadow-2xl active:scale-95"
           >
             Ver Todas
           </Link>
@@ -56,7 +56,7 @@ export default async function Home() {
         <div className="mt-12 flex">
           <Link
             href={`/propiedades?categoria=${CATEGORIA_EN_POZO}`}
-            className="rounded-full bg-verde-oscuro hover:underline hover:text-title-color duration-300 hover:bg-white px-8 py-3 border border-verde-oscuro text-sm font-bold uppercase tracking-widest text-on-primary transition-all hover:shadow-xl active:scale-95"
+            className="flex items-center justify-center gap-2 cursor-pointer rounded-full bg-verde-oscuro px-8 py-4 font-poppins text-sm font-semibold text-white shadow-lg backdrop-blur transition-all duration-300 border uppercase border-verder-oscuro hover:-translate-y-1 hover:bg-white/90 hover:text-verde-oscuro hover:shadow-2xl active:scale-95"
           >
             Ver proyectos
           </Link>

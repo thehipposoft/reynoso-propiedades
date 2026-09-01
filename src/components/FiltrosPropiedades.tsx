@@ -18,7 +18,7 @@ const TABS: { key: Tab; label: string }[] = [
 ];
 
 const PILL_CLASSNAME =
-  "cursor-pointer rounded-full border border-outline-variant bg-surface-container-lowest px-4 py-2.5 text-sm text-on-surface transition-colors duration-300 hover:border-verde-oscuro focus:outline-none focus:ring-2 focus:ring-primary/20 font-inter";
+  "cursor-pointer rounded-full border font-poppins border-outline-variant bg-surface-container-lowest px-4 py-2.5 text-sm text-on-surface transition-colors duration-300 hover:border-verde-oscuro focus:outline-none focus:ring-2 focus:ring-primary/20 font-inter";
 
 const IconFlecha = ({ className }: { className?: string }) => (
   <svg xmlns="http://www.w3.org/2000/svg" width="14" height="8" fill="none" className={className}>
@@ -129,7 +129,7 @@ export const FiltrosPropiedades = ({ categorias }: Props) => {
             key={tab.key}
             type="button"
             onClick={() => seleccionarTab(tab.key)}
-            className={`-mb-px cursor-pointer border-b-2 font-jakarta text-base font-bold transition-colors duration-300 ${
+            className={`-mb-px cursor-pointer border-b-2 font-poppins text-base font-semibold transition-colors duration-300 ${
               tabActivo === tab.key
                 ? "border-verde-oscuro text-verde-oscuro"
                 : "border-transparent text-on-surface-variant hover:text-on-surface"

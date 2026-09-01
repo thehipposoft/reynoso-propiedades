@@ -67,7 +67,7 @@ export const Menu = () => {
               key={item.label}
               href={item.href}
               {...("external" in item ? { target: "_blank", rel: "noreferrer" } : {})}
-              className={`menu-item font-jakarta text-lg font-bold tracking-tight transition-colors ${item.label === "Nuestros Desarrollos" ? "rounded-full border border-verde-oscuro bg-white px-6 py-2 text-verde-oscuro duration-500 hover:bg-transparent hover:text-white" : "text-white duration-300 hover:text-primary-green"}`}
+              className={`menu-item font-jakarta text-lg font-bold tracking-tight transition-colors ${item.label === "Nuestros Desarrollos" ? "rounded-full hover:shadow-2xl active:scale-95 hover:-translate-y-1 bg-white px-6 py-2 text-title-color duration-300 hover:bg-verde-oscuro hover:text-white" : "text-white duration-300 hover:text-primary-green"}`}
             >
               {item.label}
             </Link>

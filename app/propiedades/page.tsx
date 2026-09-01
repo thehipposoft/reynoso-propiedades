@@ -72,7 +72,7 @@ export default async function PropiedadesPage({
     <main className="mx-auto w-full max-w-7xl px-4 py-10">
       <FiltrosPropiedades categorias={categorias} />
 
-      <h1 className="mb-8 text-xl font-semibold">{titulo}</h1>
+      <h1 className="mb-8 text-xl font-semibold ">{titulo}</h1>
 
       {properties.length === 0 ? (
         <p className="text-gray-500">No hay propiedades disponibles con estos filtros.</p>

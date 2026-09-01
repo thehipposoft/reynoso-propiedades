@@ -13,7 +13,7 @@ interface Props {
 type Operacion = "venta" | "alquiler";
 
 const BOTON_OPERACION_CLASSNAME =
-  "flex items-center justify-center gap-2 cursor-pointer rounded-full bg-white/95 px-8 py-4 text-sm font-bold uppercase tracking-wide text-title-color shadow-lg backdrop-blur transition-all duration-300 hover:-translate-y-1 hover:bg-verde-oscuro hover:text-on-primary hover:shadow-2xl active:scale-95";
+  "flex items-center justify-center gap-2 cursor-pointer rounded-full bg-white/95 px-8 py-4 font-poppins text-sm font-semibold text-title-color shadow-lg backdrop-blur transition-all duration-300 hover:-translate-y-1 hover:bg-verde-oscuro hover:text-on-primary hover:shadow-2xl active:scale-95";
 
 export const BusquedaAvanzada = ({ categorias }: Props) => {
   const router = useRouter();
