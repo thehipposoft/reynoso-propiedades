@@ -5,6 +5,8 @@ import {
   ODOO_MODELS,
   ODOO_FIELDS,
   estadosDisponiblesParaOperacion,
+  ESTADO_PUBLICADO,
+  FILTRAR_SOLO_PUBLICADAS,
   type TipoOperacion,
 } from './models';
 import { slugify } from '@/src/lib/slug';
@@ -122,6 +124,10 @@ async function fetchProperties(filters: PropertyFilters = {}): Promise<OdooPropi
   // Categoría se filtra después en JS — ver nota al pie de la función.
   const domain: unknown[] = [[ODOO_FIELDS.ESTADO, 'in', estados]];
 
+  if (FILTRAR_SOLO_PUBLICADAS) {
+    domain.push([ODOO_FIELDS.ESTADO_PUBLICACION, '=', ESTADO_PUBLICADO]);
+  }
+
   if (busqueda?.trim()) {
     domain.push(['x_name', 'ilike', busqueda.trim()]);
   }
@@ -167,10 +173,15 @@ async function fetchPropertyBySlug(slug: string): Promise<OdooPropiedad | null> 
   const id = idFromSlug(slug);
   if (id === null) return null;
 
+  const domain: unknown[] = [['id', '=', id]];
+  if (FILTRAR_SOLO_PUBLICADAS) {
+    domain.push([ODOO_FIELDS.ESTADO_PUBLICACION, '=', ESTADO_PUBLICADO]);
+  }
+
   const [raw] = await odooExecute<any[]>(
     ODOO_MODELS.PROPIEDAD,
     'search_read',
-    [[['id', '=', id]], PROPERTY_FIELDS],
+    [domain, PROPERTY_FIELDS],
     { limit: 1, context: { bin_size: true } }
   );
 

@@ -5,11 +5,9 @@ import type { OdooPropiedad } from "@/src/types/OdooPropiedad";
 import Link from "next/link";
 import { formatPrecio, formatTitulo, parsePositiveNumber } from "@/src/lib/format";
 import { esInversionEnPozo } from "@/src/lib/filtros";
-import { BotonWhatsApp } from "./BotonWhatsApp";
 
 interface Props {
   propiedad: OdooPropiedad;
-  mostrarAgente?: boolean;
 }
 
 type IconoProps = { className?: string };
@@ -62,7 +60,7 @@ function pluralizar(cantidad: number, singular: string, plural: string): string 
   return cantidad === 1 ? singular : plural;
 }
 
-export const PropertyCard = ({ propiedad, mostrarAgente = false }: Props) => {
+export const PropertyCard = ({ propiedad }: Props) => {
   const imagen = propiedad.fotoPortada ?? propiedad.fotos[0]?.url ?? "";
   const esPozo = esInversionEnPozo(propiedad.tipoPropiedad);
   const precioFormateado = esPozo ? null : formatPrecio(propiedad.precio, propiedad.moneda);
@@ -104,25 +102,6 @@ export const PropertyCard = ({ propiedad, mostrarAgente = false }: Props) => {
 
       {/* Contenido */}
       <div className="flex flex-grow flex-col p-3 sm:p-6">
-        {mostrarAgente && propiedad.agente?.fotoUrl && (
-          <div className="relative -mt-8 mb-1 h-12 w-12 self-start sm:-mt-14 sm:mb-2 sm:h-20 sm:w-20">
-            <Image
-              src={propiedad.agente.fotoUrl}
-              alt={propiedad.agente.nombre}
-              fill
-              sizes="80px"
-              className="rounded-full border-2 border-surface-container-lowest object-top object-cover shadow-md sm:border-4"
-            />
-            {propiedad.agente.telefono && (
-              <BotonWhatsApp
-                telefono={propiedad.agente.telefono}
-                nombreAgente={propiedad.agente.nombre}
-                className="absolute bottom-0 right-0 flex h-5 w-5 cursor-pointer items-center justify-center rounded-full bg-[#25D366] text-white shadow-md transition-transform duration-300 hover:scale-110 sm:h-7 sm:w-7"
-              />
-            )}
-          </div>
-        )}
-
         <h4 className="mb-1 line-clamp-2 font-headline text-sm font-semibold tracking-tight text-title-color sm:mb-3 sm:text-2xl">
           {formatTitulo(propiedad.nombre)}
         </h4>

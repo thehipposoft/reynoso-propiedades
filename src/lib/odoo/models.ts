@@ -7,6 +7,7 @@ export const ODOO_MODELS = {
 
 export const ODOO_FIELDS = {
   ESTADO: 'x_studio_estado_de_la_propiedad',
+  ESTADO_PUBLICACION: 'x_studio_estado_de_publicacin',
   DRIVE_LINK: 'x_studio_cdigo',
   PRECIO: 'x_studio_precio',
   MONEDA: 'x_studio_moneda',
@@ -28,6 +29,14 @@ export const ODOO_FIELDS = {
   RESPONSABLE: 'x_studio_responsable',
   ZONA: 'x_studio_zona',
 } as const;
+
+export const ESTADO_PUBLICADO = 'Publicado';
+
+// Interruptor único: mientras Reynoso termina de cargar "Estado de Publicación"
+// en el catálogo existente, lo dejamos en false para no ocultar nada del
+// sitio. El día que confirmen que todo está cargado, cambiar a true y
+// deployar — es el único cambio de código necesario para activar el filtro.
+export const FILTRAR_SOLO_PUBLICADAS = false;
 
 export type TipoOperacion = 'venta' | 'alquiler';
 

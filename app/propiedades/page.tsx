@@ -79,7 +79,7 @@ export default async function PropiedadesPage({
       ) : (
         <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-3">
           {properties.map((property) => (
-            <PropertyCard key={property.id} propiedad={property} mostrarAgente />
+            <PropertyCard key={property.id} propiedad={property} />
           ))}
         </div>
       )}

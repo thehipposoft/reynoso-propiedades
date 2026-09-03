@@ -3,6 +3,7 @@ import Link from "next/link";
 import type { OdooPropiedad } from "@/src/types/OdooPropiedad";
 import { formatPrecio, formatLabel, operacionDesdeEstado } from "@/src/lib/format";
 import { esInversionEnPozo } from "@/src/lib/filtros";
+import { TELEFONO_CONTACTO_GENERAL } from "@/src/lib/agentes";
 import { GaleriaPropiedad } from "./GaleriaPropiedad";
 
 interface Props {
@@ -110,43 +111,34 @@ export const SinglePropiedad = ({ propiedad }: Props) => {
       )}
 
       {/* 7. Agente */}
-      {(propiedad.agente?.nombre ?? propiedad.responsableNombre) && (
-        <div className="mt-6 flex flex-wrap items-center justify-between gap-4 rounded-2xl bg-surface-container-low p-5">
+      <div className="mt-6 w-fit">
+        {propiedad.agente?.fotoUrl && (
           <div className="flex items-center gap-4">
-            {propiedad.agente?.fotoUrl ? (
+            <div className="relative h-28 w-28 shrink-0">
               <Image
                 src={propiedad.agente.fotoUrl}
                 alt={propiedad.agente.nombre}
-                width={56}
-                height={56}
-                className="h-14 w-14 shrink-0 rounded-full object-cover object-top"
+                fill
+                sizes="80px"
+                className="rounded-full object-cover object-top shadow-md"
               />
-            ) : (
-              <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-surface-container text-2xl text-verde-oscuro">
-                🧑‍💼
-              </span>
-            )}
-            <div>
-              <p className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Agente</p>
-              <p className="font-bold text-on-surface">
-                {propiedad.agente?.nombre ?? propiedad.responsableNombre}
-              </p>
+            </div>
+            <div className="flex flex-col">
+              <p className="text-[10px] font-bold uppercase leading-0 tracking-widest text-on-surface-variant">Agente</p>
+              <p className="text-lg font-bold text-on-surface">{propiedad.agente.nombre}</p>
+              <Link
+                href={`https://wa.me/${(propiedad.agente?.telefono ?? TELEFONO_CONTACTO_GENERAL).replace(/\D/g, "")}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`relative z-10 flex w-fit items-center gap-2 rounded-full border border-verde-oscuro bg-surface-container-lowest px-5 py-2 text-sm font-bold text-on-surface shadow-md transition-all duration-300 hover:bg-verde-oscuro hover:text-white ${propiedad.agente?.fotoUrl ? "-left-6 mt-2" : ""}`}
+              >
+                <IconWhatsApp className="h-8 w-8 text-[#25D366]" />
+                Contactar
+              </Link>
             </div>
           </div>
-
-          {propiedad.agente?.telefono && (
-            <Link
-              href={`https://wa.me/${propiedad.agente.telefono.replace(/\D/g, "")}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 rounded-full border border-verde-oscuro bg-surface-container-lowest px-5 py-2.5 text-sm font-bold text-on-surface transition-all duration-300 hover:bg-verde-oscuro hover:text-white"
-            >
-              <IconWhatsApp className="h-5 w-5 text-[#25D366]" />
-              Contactar
-            </Link>
-          )}
-        </div>
-      )}
+        )}
+      </div>
 
     </article>
   );
