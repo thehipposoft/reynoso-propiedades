@@ -8,7 +8,7 @@ interface Props {
   titulo: string;
 }
 
-const VISIBLE = 5; // máximo visible en el grid
+const VISIBLE_MINIATURAS = 5; // máximo de miniaturas debajo de la imagen principal
 
 export const GaleriaPropiedad = ({ imagenes, titulo }: Props) => {
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
@@ -37,117 +37,57 @@ export const GaleriaPropiedad = ({ imagenes, titulo }: Props) => {
 
   if (imagenes.length === 0) return null;
 
-  const esUnica = imagenes.length === 1;
-  const visibles = imagenes.slice(0, VISIBLE);
-  const resto = imagenes.length - VISIBLE;
+  const miniaturas = imagenes.slice(1, 1 + VISIBLE_MINIATURAS);
+  const resto = imagenes.length - (1 + VISIBLE_MINIATURAS);
 
   return (
     <>
-      {esUnica ? (
-        /* Sin galería cargada — solo la foto de portada, a todo el ancho del container */
+      <div className="mb-12">
+        {/* Imagen principal */}
         <button
           onClick={() => abrir(0)}
-          className="relative mb-12 aspect-[16/9] w-full overflow-hidden rounded-2xl bg-surface-container cursor-pointer"
+          className="relative aspect-[12/5] w-full overflow-hidden rounded-lg bg-surface-container cursor-pointer"
         >
           <Image
             src={imagenes[0]}
-            alt={titulo}
+            alt={`${titulo} — imagen 1`}
             fill
             priority
             sizes="100vw"
             className="object-cover transition-transform duration-500 hover:scale-105"
           />
         </button>
-      ) : (
-        /* Grid */
-        <div className="mb-12 grid h-[520px] grid-cols-3 grid-rows-3 gap-2">
 
-          {/* Imagen principal — 2 cols × 2 rows */}
-          <button
-            onClick={() => abrir(0)}
-            className="relative col-span-2 row-span-2 overflow-hidden rounded-2xl bg-surface-container cursor-pointer"
-          >
-            <Image
-              src={visibles[0]}
-              alt={`${titulo} — imagen 1`}
-              fill
-              priority
-              sizes="66vw"
-              className="object-cover transition-transform duration-500 hover:scale-105"
-            />
-          </button>
-
-          {/* Imagen derecha superior */}
-          {visibles[1] && (
-            <button
-              onClick={() => abrir(1)}
-              className="relative overflow-hidden rounded-2xl bg-surface-container cursor-pointer"
-            >
-              <Image
-                src={visibles[1]}
-                alt={`${titulo} — imagen 2`}
-                fill
-                sizes="33vw"
-                className="object-cover transition-transform duration-500 hover:scale-105"
-              />
-            </button>
-          )}
-
-          {/* Imagen derecha inferior */}
-          {visibles[2] && (
-            <button
-              onClick={() => abrir(2)}
-              className="relative overflow-hidden rounded-2xl bg-surface-container cursor-pointer"
-            >
-              <Image
-                src={visibles[2]}
-                alt={`${titulo} — imagen 3`}
-                fill
-                sizes="33vw"
-                className="object-cover transition-transform duration-500 hover:scale-105"
-              />
-            </button>
-          )}
-
-          {/* Fila 3 — imagen 4 */}
-          {visibles[3] && (
-            <button
-              onClick={() => abrir(3)}
-              className="relative overflow-hidden rounded-2xl bg-surface-container cursor-pointer"
-            >
-              <Image
-                src={visibles[3]}
-                alt={`${titulo} — imagen 4`}
-                fill
-                sizes="33vw"
-                className="object-cover transition-transform duration-500 hover:scale-105"
-              />
-            </button>
-          )}
-
-          {/* Fila 3 — imagen 5 */}
-          {visibles[4] && (
-            <button
-              onClick={() => abrir(4)}
-              className="relative overflow-hidden rounded-2xl bg-surface-container cursor-pointer"
-            >
-              <Image
-                src={visibles[4]}
-                alt={`${titulo} — imagen 5`}
-                fill
-                sizes="33vw"
-                className="object-cover transition-transform duration-500 hover:scale-105"
-              />
-              {resto > 0 && (
-                <div className="absolute inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-                  <span className="font-headline text-2xl font-bold text-white">+{resto} más</span>
-                </div>
-              )}
-            </button>
-          )}
-
-        </div>
-      )}
+        {/* Miniaturas */}
+        {miniaturas.length > 0 && (
+          <div className="mt-2 flex gap-2 overflow-x-auto sm:overflow-visible">
+            {miniaturas.map((src, i) => {
+              const indice = i + 1;
+              const esUltima = i === miniaturas.length - 1;
+              return (
+                <button
+                  key={indice}
+                  onClick={() => abrir(indice)}
+                  className="relative aspect-[3/2] w-28 shrink-0 overflow-hidden rounded-lg bg-surface-container cursor-pointer sm:w-auto sm:flex-1"
+                >
+                  <Image
+                    src={src}
+                    alt={`${titulo} — imagen ${indice + 1}`}
+                    fill
+                    sizes="20vw"
+                    className="object-cover transition-transform duration-500 hover:scale-105"
+                  />
+                  {esUltima && resto > 0 && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+                      <span className="font-headline text-xl font-bold text-white sm:text-2xl">+{resto} más</span>
+                    </div>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        )}
+      </div>
 
       {/* Lightbox */}
       {lightboxIndex !== null && (

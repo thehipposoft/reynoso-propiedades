@@ -1,6 +1,6 @@
-// src/app/api/property-image/[lineId]/route.ts
 import { odooExecute } from '@/src/lib/odoo/client';
 import { ODOO_MODELS, ODOO_FIELDS } from '@/src/lib/odoo/models';
+import { applyWatermark } from '@/src/lib/watermark';
 
 function detectMimeType(buffer: Buffer): string {
   if (buffer[0] === 0xff && buffer[1] === 0xd8) return 'image/jpeg';
@@ -37,12 +37,20 @@ export async function GET(
     return new Response('Imagen no encontrada', { status: 404 });
   }
 
-  const buffer = Buffer.from(base64, 'base64');
+  const original = Buffer.from(base64, 'base64');
 
-  return new Response(buffer, {
+  let output: Buffer;
+  try {
+    output = await applyWatermark(original);
+  } catch (err) {
+    console.error('Error aplicando watermark:', err);
+    output = original;
+  }
+
+  return new Response(new Uint8Array(output), {
     headers: {
-      'Content-Type': detectMimeType(buffer),
-      'Cache-Control': 'public, max-age=3600, stale-while-revalidate=86400',
+      'Content-Type': detectMimeType(output),
+      'Cache-Control': 'public, max-age=604800, stale-while-revalidate=2592000',
     },
   });
 }
