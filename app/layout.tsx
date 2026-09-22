@@ -35,6 +35,21 @@ export const metadata: Metadata = {
   title: "Reynoso Bienes Raíces",
   description:
     "Encontrá tu propiedad ideal en el norte argentino. Terrenos, casas y departamentos en venta y alquiler.",
+  openGraph: {
+    title: "Reynoso Bienes Raíces",
+    description: "Encontrá tu propiedad ideal en el norte argentino. Terrenos, casas y departamentos en venta y alquiler.",
+    url: "https://propiedades.reynosobienesraices.com.ar",
+    siteName: "Reynoso Bienes Raíces",
+    images: [
+      {
+        url: "https://propiedades.reynosobienesraices.com.ar/assets/images/logo-meta.jpg",
+        width: 901,
+        height: 581,
+      },
+    ],
+    locale: "es_AR",
+    type: "website",
+  },
 };
 
 export default function RootLayout({

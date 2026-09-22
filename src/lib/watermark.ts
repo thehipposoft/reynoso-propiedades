@@ -9,7 +9,7 @@ export async function applyWatermark(imageBuffer: Buffer): Promise<Buffer> {
   const base = sharp(imageBuffer);
   const { width = 1200, height = 800 } = await base.metadata();
 
-  const targetLogoWidth = Math.round(width * 0.18);
+  const targetLogoWidth = Math.round(width * 0.25);
   const logo = await sharp(logoBuffer).resize({ width: targetLogoWidth }).toBuffer();
   const { width: logoWidth = targetLogoWidth, height: logoHeight = targetLogoWidth } =
     await sharp(logo).metadata();
