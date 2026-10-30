@@ -8,22 +8,54 @@ const logoBuffer = Buffer.from(LOGO_BASE64, 'base64');
 const LOGO_WIDTH_RATIO = 0.25;
 
 // Detección: template matching (NCC) del alfa del logo sobre la zona central.
+// El logo se divide en bloques y se promedia la NCC de cada uno: así un fondo
+// con mucho contraste (ej. borde de una puerta) no tapa el resto del logo.
 const DETECT_WIDTH = 400;
 const DETECT_SCALE_MIN = 0.19;
 const DETECT_SCALE_MAX = 0.31;
 const DETECT_SCALE_STEP = 0.01;
 const DETECT_SEARCH_RATIO = 0.08; // desplazamiento máximo desde el centro
 const DETECT_STRIDE = 2;
-// Calibrado: con marca ≥ 0.64, sin marca ≤ 0.39.
+const DETECT_TILES_X = 6;
+const DETECT_TILES_Y = 3;
+// Calibrado: con marca ≥ 0.66, sin marca ≤ 0.34.
 const DETECT_THRESHOLD = 0.5;
 const ALPHA_CHANNEL = 3;
 const EPSILON = 1e-9;
+const MIN_TILE_VARIANCE = 1e-6; // bloques sin logo (alfa plano) no aportan
+
+type Tile = {
+  x0: number;
+  y0: number;
+  x1: number;
+  y1: number;
+  centered: Float32Array; // alfa del bloque menos su media
+  variance: number;
+};
 
 type Template = {
   width: number;
   height: number;
-  centered: Float32Array; // alfa menos su media
-  variance: number;
+  tiles: Tile[];
+};
+
+const buildTile = (
+  alpha: Buffer,
+  width: number,
+  x0: number,
+  y0: number,
+  x1: number,
+  y1: number
+): Tile => {
+  const values: number[] = [];
+  for (let j = y0; j < y1; j++) {
+    for (let i = x0; i < x1; i++) values.push(alpha[j * width + i]);
+  }
+  const mean = values.reduce((acc, v) => acc + v, 0) / values.length;
+  const centered = Float32Array.from(values, (v) => v - mean);
+  const variance = centered.reduce((acc, v) => acc + v * v, 0);
+
+  return { x0, y0, x1, y1, centered, variance };
 };
 
 const buildTemplate = async (width: number): Promise<Template> => {
@@ -33,12 +65,22 @@ const buildTemplate = async (width: number): Promise<Template> => {
     .raw()
     .toBuffer({ resolveWithObject: true });
 
-  const size = info.width * info.height;
-  const mean = data.reduce((acc, v) => acc + v, 0) / size;
-  const centered = Float32Array.from(data, (v) => v - mean);
-  const variance = centered.reduce((acc, v) => acc + v * v, 0);
+  const tiles: Tile[] = [];
+  for (let ty = 0; ty < DETECT_TILES_Y; ty++) {
+    for (let tx = 0; tx < DETECT_TILES_X; tx++) {
+      const tile = buildTile(
+        data,
+        info.width,
+        Math.floor((tx * info.width) / DETECT_TILES_X),
+        Math.floor((ty * info.height) / DETECT_TILES_Y),
+        Math.floor(((tx + 1) * info.width) / DETECT_TILES_X),
+        Math.floor(((ty + 1) * info.height) / DETECT_TILES_Y)
+      );
+      if (tile.variance > MIN_TILE_VARIANCE) tiles.push(tile);
+    }
+  }
 
-  return { width: info.width, height: info.height, centered, variance };
+  return { width: info.width, height: info.height, tiles };
 };
 
 // Templates en memoria: se generan una sola vez por proceso.
@@ -55,35 +97,46 @@ const getTemplates = (): Promise<Template[]> => {
   return templatesPromise;
 };
 
+const tileScore = (
+  img: Buffer,
+  imgWidth: number,
+  x: number,
+  y: number,
+  tile: Tile
+): number => {
+  const tileWidth = tile.x1 - tile.x0;
+  const size = tileWidth * (tile.y1 - tile.y0);
+
+  let sum = 0;
+  for (let j = tile.y0; j < tile.y1; j++) {
+    const row = (y + j) * imgWidth + x;
+    for (let i = tile.x0; i < tile.x1; i++) sum += img[row + i];
+  }
+  const mean = sum / size;
+
+  let cov = 0;
+  let variance = 0;
+  let k = 0;
+  for (let j = tile.y0; j < tile.y1; j++) {
+    const row = (y + j) * imgWidth + x;
+    for (let i = tile.x0; i < tile.x1; i++) {
+      const d = img[row + i] - mean;
+      cov += d * tile.centered[k++];
+      variance += d * d;
+    }
+  }
+
+  return cov / Math.sqrt(variance * tile.variance + EPSILON);
+};
+
 const matchScore = (
   img: Buffer,
   imgWidth: number,
   x: number,
   y: number,
   t: Template
-): number => {
-  const size = t.width * t.height;
-
-  let sum = 0;
-  for (let j = 0; j < t.height; j++) {
-    const row = (y + j) * imgWidth + x;
-    for (let i = 0; i < t.width; i++) sum += img[row + i];
-  }
-  const mean = sum / size;
-
-  let cov = 0;
-  let variance = 0;
-  for (let j = 0; j < t.height; j++) {
-    const row = (y + j) * imgWidth + x;
-    for (let i = 0; i < t.width; i++) {
-      const d = img[row + i] - mean;
-      cov += d * t.centered[j * t.width + i];
-      variance += d * d;
-    }
-  }
-
-  return cov / Math.sqrt(variance * t.variance + EPSILON);
-};
+): number =>
+  t.tiles.reduce((acc, tile) => acc + tileScore(img, imgWidth, x, y, tile), 0) / t.tiles.length;
 
 export const detectWatermarkScore = async (imageBuffer: Buffer): Promise<number> => {
   const [{ data: img, info }, templates] = await Promise.all([

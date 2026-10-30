@@ -11,6 +11,7 @@ import {
 } from './models';
 import { slugify } from '@/src/lib/slug';
 import { getAgentePorOdooId } from '@/src/lib/agentes';
+import { WATERMARK_QUERY } from '@/src/lib/watermark-version';
 import type { OdooPropiedad, OdooPropiedadFoto } from '@/src/types/OdooPropiedad';
 
 const PROPERTY_FIELDS = [
@@ -85,7 +86,7 @@ async function fetchLineasGaleria(lineIds: number[]): Promise<Map<number, FotoCo
       linea.id as number,
       {
         id: linea.id,
-        url: `/api/property-image/${linea.id}`,
+        url: `/api/property-image/${linea.id}${WATERMARK_QUERY}`,
         descripcion: linea.x_name || null,
         orden: linea[ODOO_FIELDS.GALERIA_SEQUENCE],
       },
@@ -132,7 +133,7 @@ function mapPropiedad(raw: any, fotos: OdooPropiedadFoto[]): OdooPropiedad {
     superficieCubierta: raw[ODOO_FIELDS.SUPERFICIE_CUBIERTA] || null,
     superficieTotal: raw[ODOO_FIELDS.SUPERFICIE_TOTAL] || null,
     descripcion: raw[ODOO_FIELDS.DESCRIPCION] || null,
-    fotoPortada: raw[ODOO_FIELDS.FOTO_PORTADA] ? `/api/property-cover/${raw.id}` : null,
+    fotoPortada: raw[ODOO_FIELDS.FOTO_PORTADA] ? `/api/property-cover/${raw.id}${WATERMARK_QUERY}` : null,
     fotos,
     responsableNombre: mapMany2One(raw[ODOO_FIELDS.RESPONSABLE]),
     agente: responsableId !== null ? getAgentePorOdooId(responsableId) : null,
@@ -174,7 +175,8 @@ async function fetchProperties(filters: PropertyFilters = {}): Promise<OdooPropi
     { context: { bin_size: true } }
   );
 
-  const lineIdsDe = (raw: any): number[] => raw[ODOO_FIELDS.GALERIA] || [];
+  const lineIdsDe = (raw: Record<string, unknown>): number[] =>
+    (raw[ODOO_FIELDS.GALERIA] as number[] | false) || [];
   const lineas = await fetchLineasGaleria(rawList.flatMap(lineIdsDe));
 
   const propiedades = rawList.map((raw) =>
