@@ -66,8 +66,12 @@ export function idFromSlug(slug: string): number | null {
   return match ? Number(match[1]) : null;
 }
 
-async function fetchFotos(lineIds: number[]): Promise<OdooPropiedadFoto[]> {
-  if (lineIds.length === 0) return [];
+type FotoConOrden = OdooPropiedadFoto & { orden: number };
+
+// Un solo request para todas las líneas: evita cientos de llamadas en paralelo
+// que Odoo corta por rate limit (responde HTML y rompe el parser XML-RPC).
+async function fetchLineasGaleria(lineIds: number[]): Promise<Map<number, FotoConOrden>> {
+  if (lineIds.length === 0) return new Map();
 
   const lineas = await odooExecute<any[]>(
     ODOO_MODELS.GALERIA_LINE,
@@ -76,13 +80,32 @@ async function fetchFotos(lineIds: number[]): Promise<OdooPropiedadFoto[]> {
     { fields: ['id', 'x_name', ODOO_FIELDS.GALERIA_SEQUENCE], context: { bin_size: true } }
   );
 
-  return lineas
-    .sort((a, b) => a[ODOO_FIELDS.GALERIA_SEQUENCE] - b[ODOO_FIELDS.GALERIA_SEQUENCE])
-    .map((linea) => ({
-      id: linea.id,
-      url: `/api/property-image/${linea.id}`,
-      descripcion: linea.x_name || null,
-    }));
+  return new Map(
+    lineas.map((linea) => [
+      linea.id as number,
+      {
+        id: linea.id,
+        url: `/api/property-image/${linea.id}`,
+        descripcion: linea.x_name || null,
+        orden: linea[ODOO_FIELDS.GALERIA_SEQUENCE],
+      },
+    ])
+  );
+}
+
+function fotosDePropiedad(
+  lineIds: number[],
+  lineas: Map<number, FotoConOrden>
+): OdooPropiedadFoto[] {
+  return lineIds
+    .map((id) => lineas.get(id))
+    .filter((foto): foto is FotoConOrden => foto !== undefined)
+    .sort((a, b) => a.orden - b.orden)
+    .map(({ id, url, descripcion }) => ({ id, url, descripcion }));
+}
+
+async function fetchFotos(lineIds: number[]): Promise<OdooPropiedadFoto[]> {
+  return fotosDePropiedad(lineIds, await fetchLineasGaleria(lineIds));
 }
 
 function mapMany2OneId(value: unknown): number | null {
@@ -151,12 +174,11 @@ async function fetchProperties(filters: PropertyFilters = {}): Promise<OdooPropi
     { context: { bin_size: true } }
   );
 
-  const propiedades = await Promise.all(
-    rawList.map(async (raw) => {
-      const lineIds: number[] = raw[ODOO_FIELDS.GALERIA] ?? [];
-      const fotos = await fetchFotos(lineIds);
-      return mapPropiedad(raw, fotos);
-    })
+  const lineIdsDe = (raw: any): number[] => raw[ODOO_FIELDS.GALERIA] || [];
+  const lineas = await fetchLineasGaleria(rawList.flatMap(lineIdsDe));
+
+  const propiedades = rawList.map((raw) =>
+    mapPropiedad(raw, fotosDePropiedad(lineIdsDe(raw), lineas))
   );
 
   // Categoría es un many2one — filtramos por su label en JS en vez de
